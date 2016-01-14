@@ -85,7 +85,7 @@ def generate_calendar(classes):
     cal.add('prodid', '-//WPI Calender Generator//adamgoldsmith.name//')
     cal.add('version', '2.0')
 
-    for c in classes:
+    for index, c in enumerate(classes):
         event = Event()
         # push the start and end dates back one day, then exclude the start date
         # this fixes a problem where the first day of the term would have all of the classes
@@ -99,6 +99,7 @@ def generate_calendar(classes):
         event.add('dtend', end_date)
         event.add('rrule', {'freq': "weekly", 'until': final_end_date, 'byday': format_days(c['days'])})
         event.add('exdate', start_date)
+        event.add('uid', "WPICal" + str(index) + "@adamgoldsmith.name")
         event.add('dtstamp', datetime.now())
 
         cal.add_component(event)
