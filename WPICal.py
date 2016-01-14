@@ -5,6 +5,9 @@ from icalendar import Calendar, Event
 from preferences import *
 import requests
 from bs4 import BeautifulSoup
+from flask import Flask
+
+app = Flask(__name__)
 
 urls = {'home'         : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_WWWLogin",
         'login'        : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_ValLogin",
@@ -101,16 +104,16 @@ def generate_calendar(classes):
         cal.add_component(event)
     return cal
 
+@app.route("/")
 def main():
     session = login()
     resp = get_classes(session)
     class_list = parse_classes(resp)
     calendar = generate_calendar(class_list)
-
-    with open('example.ics', 'wb') as f:
-        f.write(calendar.to_ical())
-
     session.get(urls["logout"])
     session.close()
 
-main()
+    return calendar.to_ical()
+
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0')
