@@ -18,26 +18,33 @@ urls = {'home'         : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_WWWLogin
         'view_classes' : "https://bannerweb.wpi.edu/pls/prod/bwskfshd.P_CrseSchdDetl",
         'view_term'    : "https://bannerweb.wpi.edu/pls/prod/bwskflib.P_SelDefTerm"}
 
-def login():
-    s = None
-    login_success = False
-    while not login_success:
-        s = requests.Session()
+
+def get_classes():
+    s = requests.Session()
+    success = False
+    while not success:
         s.get(urls["home"])
-        r = s.get(urls["login"], params={"sid": SID, "PIN": PIN})
-        login_success = (r.status_code == 200)
-        if not login_success:
+        r = s.get(urls["login"], params={"sid": SID, "PIN": PIN}, headers={'referer': urls["login"]})
+        success = (r.status_code == 200)
+        if not success:
             print("Login failed, retrying")
             time.sleep(5)
-    return s
+            continue
 
-def get_classes(s):
-    s.get(urls["view_term"], headers={'referer': urls["registration"]})
-    #soup = BeautifulSoup(r.text, 'html.parser')
-    #soup.find(id="term_id").children
-    term = "201602" #make dynamic eventually
-    r= s.get(urls['select_term'], params={'term_in': term})
-    r = s.get(urls['view_classes'])
+        s.get(urls["view_term"], headers={'referer': urls["registration"]})
+        #soup = BeautifulSoup(r.text, 'html.parser')
+        #soup.find(id="term_id").children
+        term = "201602" #make dynamic eventually
+        s.get(urls['select_term'], params={'term_in': term}, headers={'referer': urls["view_term"]})
+        r = s.get(urls['view_classes'], headers={'referer': urls["registration"]})
+        success = (r.status_code == 200)
+        if not success:
+            print("Login failed, retrying")
+            time.sleep(5)
+            continue
+
+    s.get(urls["logout"])
+    s.close()
     return r
 
 def parse_classes(r):
@@ -107,12 +114,9 @@ def generate_calendar(classes):
 
 @app.route("/")
 def main():
-    session = login()
-    resp = get_classes(session)
+    resp = get_classes()
     class_list = parse_classes(resp)
     calendar = generate_calendar(class_list)
-    session.get(urls["logout"])
-    session.close()
 
     return calendar.to_ical()
 
