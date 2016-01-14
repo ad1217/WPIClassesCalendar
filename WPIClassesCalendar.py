@@ -101,7 +101,6 @@ def generate_calendar(classes):
         start_date = tz.localize(datetime.strptime(c['dates'][0] + " " + c['times'][0], "%b %d, %Y %I:%M %p") - timedelta(days=1)).astimezone(pytz.utc)
         end_date = tz.localize(datetime.strptime(c['dates'][0] + " " + c['times'][1], "%b %d, %Y %I:%M %p") - timedelta(days=1)).astimezone(pytz.utc)
         final_end_date = tz.localize(datetime.strptime(c["dates"][1], "%b %d, %Y")).astimezone(pytz.utc)
-        print(c['times'][0] + start_date.strftime('%Y-%m-%d %H:%M:%S'))
         event.add('summary', c['course'] + " " + c['type'])
         event.add('dtstart', start_date)
         event.add('location', c['location'])
