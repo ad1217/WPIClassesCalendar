@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import time
 from datetime import datetime, timedelta
+import pytz
 from icalendar import Calendar, Event
 from preferences import *
 import requests
@@ -88,6 +89,7 @@ def format_days(days):
     return [day_map[d] for d in days]
 
 def generate_calendar(classes):
+    tz = pytz.timezone('US/Eastern')
     cal = Calendar()
     cal.add('prodid', '-//WPI Calender Generator//adamgoldsmith.name//')
     cal.add('version', '2.0')
@@ -96,9 +98,10 @@ def generate_calendar(classes):
         event = Event()
         # push the start and end dates back one day, then exclude the start date
         # this fixes a problem where the first day of the term would have all of the classes
-        start_date = datetime.strptime(c['dates'][0] + " " + c['times'][0], "%b %d, %Y %I:%M %p") - timedelta(days=1)
-        end_date = datetime.strptime(c['dates'][0] + " " + c['times'][1], "%b %d, %Y %I:%M %p") - timedelta(days=1)
-        final_end_date = datetime.strptime(c["dates"][1], "%b %d, %Y")
+        start_date = tz.localize(datetime.strptime(c['dates'][0] + " " + c['times'][0], "%b %d, %Y %I:%M %p") - timedelta(days=1)).astimezone(pytz.utc)
+        end_date = tz.localize(datetime.strptime(c['dates'][0] + " " + c['times'][1], "%b %d, %Y %I:%M %p") - timedelta(days=1)).astimezone(pytz.utc)
+        final_end_date = tz.localize(datetime.strptime(c["dates"][1], "%b %d, %Y")).astimezone(pytz.utc)
+        print(c['times'][0] + start_date.strftime('%Y-%m-%d %H:%M:%S'))
         event.add('summary', c['course'] + " " + c['type'])
         event.add('dtstart', start_date)
         event.add('location', c['location'])
