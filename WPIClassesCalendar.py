@@ -2,7 +2,7 @@
 import time
 from datetime import datetime, timedelta
 import pytz
-from icalendar import Calendar, Event
+import icalendar
 from preferences import *
 import requests
 from bs4 import BeautifulSoup
@@ -90,12 +90,12 @@ def format_days(days):
 
 def generate_calendar(classes):
     tz = pytz.timezone('US/Eastern')
-    cal = Calendar()
+    cal = icalendar.Calendar()
     cal.add('prodid', '-//WPI Calender Generator//adamgoldsmith.name//')
     cal.add('version', '2.0')
 
     for index, c in enumerate(classes):
-        event = Event()
+        event = icalendar.Event()
         # push the start and end dates back one day, then exclude the start date
         # this fixes a problem where the first day of the term would have all of the classes
         start_date = tz.localize(datetime.strptime(c['dates'][0] + " " + c['times'][0], "%b %d, %Y %I:%M %p") - timedelta(days=1)).astimezone(pytz.utc)
