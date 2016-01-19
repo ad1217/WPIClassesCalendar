@@ -63,18 +63,19 @@ def parse_classes(r):
                 if time_col == []:
                     continue
 
-                class_data = {'title'            : caption[0],
-                              'course'           : caption[1],
-                              'section'          : caption[2],
-                              'CRN'              : class_col[1].text,
-                              'status'           : class_col[2].text,
-                              'class_instructor' : class_col[3].text.replace('\n', ''),
-                              'times'            : time_col[1].text.split(" - "),
-                              'days'             : time_col[2].text,
-                              'location'         : time_col[3].text,
-                              'dates'            : time_col[4].text.split(" - "),
-                              'type'             : time_col[5].text,
-                              'instructor'       : time_col[6].text}
+                class_data = {'title'             : caption[0],
+                              'course'            : caption[1],
+                              'section'           : caption[2],
+                              'CRN'               : class_col[1].text,
+                              'status'            : class_col[2].text,
+                              'course_instructor' : class_col[3].text.replace('\n', ''),
+                              'times'             : time_col[1].text.split(" - "),
+                              'days'              : time_col[2].text,
+                              'location'          : time_col[3].text,
+                              'dates'             : time_col[4].text.split(" - "),
+                              'type'              : time_col[5].text,
+                              'instructor'        : time_col[6].text.replace(" (P)", ""),
+                              'instructor_email'  : time_col[6].a.get("href") if time_col[6].a is not None else None}
                 classes.append(class_data)
     return classes
 
