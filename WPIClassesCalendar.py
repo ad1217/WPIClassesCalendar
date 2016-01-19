@@ -118,6 +118,11 @@ def generate_calendar(classes):
         event.add('uid', "WPICal" + str(index) + "@adamgoldsmith.name")
         event.add('dtstamp', datetime.now())
 
+        if c['instructor_email'] is not None:
+            organizer = icalendar.vCalAddress(c['instructor_email'])
+            organizer.params['cn'] = c['instructor']
+            event['organizer'] = organizer
+
         cal.add_component(event)
     return cal
 
