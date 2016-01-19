@@ -123,6 +123,11 @@ def generate_calendar(classes):
             organizer.params['cn'] = c['instructor']
             event['organizer'] = organizer
 
+        alarm = icalendar.Alarm()
+        alarm.add('trigger', icalendar.vDuration(timedelta(minutes=-10)))
+        alarm.add('action', "display")
+        event.add_component(alarm)
+
         cal.add_component(event)
     return cal
 
