@@ -111,7 +111,7 @@ def generate_calendar(classes):
         event.add('summary', c['course'] + " " + c['type'])
         event.add('dtstart', start_date)
         event.add('location', c['location'])
-        event.add('description', c['title'] + " " + c['section'])
+        event.add('description', "{0} {1}\n{2} {3}".format(c['title'], c['section'], c['instructor'], c['instructor_email']))
         event.add('dtend', end_date)
         event.add('rrule', {'freq': "weekly", 'until': final_end_date, 'byday': format_days(c['days'])})
         event.add('exdate', start_date)
