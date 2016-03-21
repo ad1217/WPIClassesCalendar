@@ -20,7 +20,7 @@ urls = {'home'         : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_WWWLogin
         'view_term'    : "https://bannerweb.wpi.edu/pls/prod/bwskflib.P_SelDefTerm"}
 
 
-def get_classes():
+def get_classes(term):
     s = requests.Session()
     success = False
     while not success:
@@ -33,9 +33,6 @@ def get_classes():
             continue
 
         s.get(urls["view_term"], headers={'referer': urls["registration"]})
-        #soup = BeautifulSoup(r.text, 'html.parser')
-        #soup.find(id="term_id").children
-        term = "201602" #make dynamic eventually
         s.get(urls['select_term'], params={'term_in': term}, headers={'referer': urls["view_term"]})
         r = s.get(urls['view_classes'], headers={'referer': urls["registration"]})
         success = (r.status_code == 200)
@@ -133,11 +130,14 @@ def generate_calendar(classes):
 
 @app.route("/")
 def main():
-    resp = get_classes()
-    class_list = parse_classes(resp)
-    calendar = generate_calendar(class_list)
+    class_list = []
+    year = str(datetime.now().year)
+    terms = [year + "01", year + "02", year + "03"]
+    for term in terms:
+        resp = get_classes(term)
+        class_list += parse_classes(resp)
 
-    return calendar.to_ical()
+    return generate_calendar(class_list).to_ical()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
