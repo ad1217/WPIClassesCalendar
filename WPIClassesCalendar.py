@@ -20,30 +20,30 @@ urls = {'home'         : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_WWWLogin
         'view_term'    : "https://bannerweb.wpi.edu/pls/prod/bwskflib.P_SelDefTerm"}
 
 
-def get_classes(term):
+def setup_session():
     s = requests.Session()
-    success = False
-    while not success:
-        s.get(urls["home"])
-        r = s.get(urls["login"], params={"sid": SID, "PIN": PIN}, headers={'referer': urls["login"]})
-        success = (r.status_code == 200)
-        if not success:
-            print("Login failed, retrying")
-            time.sleep(5)
-            continue
+    s.get(urls["home"])
+    r = s.get(urls["login"], params={"sid": SID, "PIN": PIN}, headers={'referer': urls["login"]})
+    if not r.status_code == 200:
+        print("Login failed")
+        exit(1)
 
-        s.get(urls["view_term"], headers={'referer': urls["registration"]})
-        s.get(urls['select_term'], params={'term_in': term}, headers={'referer': urls["view_term"]})
-        r = s.get(urls['view_classes'], headers={'referer': urls["registration"]})
-        success = (r.status_code == 200)
-        if not success:
-            print("Login failed, retrying")
-            time.sleep(5)
-            continue
+    return s
 
+def get_classes(s, term):
+    s.get(urls["view_term"], headers={'referer': urls["registration"]})
+    s.get(urls['select_term'], params={'term_in': term}, headers={'referer': urls["view_term"]})
+    r = s.get(urls['view_classes'], headers={'referer': urls["registration"]})
+
+    if not r.status_code == 200:
+        print("Login failed")
+        exit(1)
+
+    return r
+
+def close_session(s):
     s.get(urls["logout"])
     s.close()
-    return r
 
 def parse_classes(r):
     classes = []
@@ -133,10 +133,13 @@ def main():
     class_list = []
     year = str((datetime.now() + timedelta(weeks=26)).year)
     terms = [year + "01", year + "02", year + "03"]
+    session = setup_session()
     for term in terms:
-        resp = get_classes(term)
+        resp = get_classes(session, term)
         class_list += parse_classes(resp)
+        resp = get_classes(session, term)
 
+    close_session(session)
     return generate_calendar(class_list).to_ical()
 
 if __name__ == "__main__":
