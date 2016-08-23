@@ -131,7 +131,7 @@ def generate_calendar(classes):
 @app.route("/")
 def main():
     class_list = []
-    year = str(datetime.now().year)
+    year = str((datetime.now() + timedelta(weeks=26)).year)
     terms = [year + "01", year + "02", year + "03"]
     for term in terms:
         resp = get_classes(term)
