@@ -86,10 +86,14 @@ def format_days(days):
                "?": "SA"} #Hmmm. I don't have any examples of this or Sunday
     return [day_map[d] for d in days]
 
-def format_dates(date_in, fmt):
-    tz = pytz.timezone('US/Eastern')
-    date = datetime.strptime(date_in, fmt)
-    return tz.localize(date).astimezone(pytz.utc)
+def format_dates(date, time=None):
+    date_fmt = "%b %d, %Y"
+    time_fmt = "%I:%M %p"
+    if time is not None:
+        date = datetime.strptime(date + time, date_fmt + time_fmt)
+    else:
+        date = datetime.strptime(date, date_fmt)
+    return pytz.timezone('US/Eastern').localize(date).astimezone(pytz.utc)
 
 def generate_calendar(classes):
     cal = icalendar.Calendar()
@@ -98,13 +102,11 @@ def generate_calendar(classes):
 
     for index, c in enumerate(classes):
         event = icalendar.Event()
-        date_fmt = "%b %d, %Y"
-        time_fmt = "%I:%M %p"
         # push the start and end dates back one day, then exclude the start date
         # this fixes a problem where the first day of the term would have all of the classes
-        start_date = format_dates(c['dates'][0] + c['times'][0], date_fmt + time_fmt) - timedelta(days=1)
-        end_date = format_dates(c['dates'][0] + c['times'][1], date_fmt + time_fmt) - timedelta(days=1)
-        final_end_date = format_dates(c["dates"][1], date_fmt)
+        start_date = format_dates(c['dates'][0], c['times'][0]) - timedelta(days=1) # start of the first class
+        end_date = format_dates(c['dates'][0], c['times'][1]) - timedelta(days=1) # end of the first class
+        final_end_date = format_dates(c["dates"][1]) # end of the term
         event.add('summary', c['course'] + " " + c['type'])
         event.add('dtstart', start_date)
         event.add('location', c['location'])
