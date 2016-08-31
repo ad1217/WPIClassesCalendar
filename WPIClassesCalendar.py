@@ -53,28 +53,27 @@ def parse_classes(text):
     for index, class_table in enumerate(tables):
         if class_table.caption.text == "Scheduled Meeting Times":
             continue
-        else:
-            class_col = class_table.find_all(attrs={'class':"dddefault"})
-            caption = class_table.caption.text.split(' - ')
-            for row in tables[index + 1].find_all('tr'):
-                time_col = row.find_all('td', attrs={'class':"dddefault"})
-                if time_col == []:
-                    continue
+        class_col = class_table.find_all(attrs={'class':"dddefault"})
+        caption = class_table.caption.text.split(' - ')
+        for row in tables[index + 1].find_all('tr'):
+            time_col = row.find_all('td', attrs={'class':"dddefault"})
+            if time_col == []:
+                continue
 
-                class_data = {'title'             : caption[0],
-                              'course'            : caption[1],
-                              'section'           : caption[2],
-                              'CRN'               : class_col[1].text,
-                              'status'            : class_col[2].text,
-                              'course_instructor' : class_col[3].text.replace('\n', ''),
-                              'times'             : time_col[1].text.split(" - "),
-                              'days'              : time_col[2].text,
-                              'location'          : time_col[3].text,
-                              'dates'             : time_col[4].text.split(" - "),
-                              'type'              : time_col[5].text,
-                              'instructor'        : time_col[6].text.replace(" (P)", ""),
-                              'instructor_email'  : time_col[6].a.get("href") if time_col[6].a is not None else None}
-                classes.append(class_data)
+            class_data = {'title'             : caption[0],
+                          'course'            : caption[1],
+                          'section'           : caption[2],
+                          'CRN'               : class_col[1].text,
+                          'status'            : class_col[2].text,
+                          'course_instructor' : class_col[3].text.replace('\n', ''),
+                          'times'             : time_col[1].text.split(" - "),
+                          'days'              : time_col[2].text,
+                          'location'          : time_col[3].text,
+                          'dates'             : time_col[4].text.split(" - "),
+                          'type'              : time_col[5].text,
+                          'instructor'        : time_col[6].text.replace(" (P)", ""),
+                          'instructor_email'  : time_col[6].a.get("href") if time_col[6].a is not None else None}
+            classes.append(class_data)
     return classes
 
 def format_days(days):
