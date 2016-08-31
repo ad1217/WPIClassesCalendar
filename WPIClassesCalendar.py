@@ -46,9 +46,9 @@ def close_session(s):
     s.get(urls["logout"])
     s.close()
 
-def parse_classes(r):
+def parse_classes(text):
     classes = []
-    soup = BeautifulSoup(r.text, 'html.parser')
+    soup = BeautifulSoup(text, 'html.parser')
     tables = soup.find_all(attrs={'class':"datadisplaytable"})
     for index, class_table in enumerate(tables):
         if class_table.caption.text == "Scheduled Meeting Times":
@@ -139,8 +139,7 @@ def main():
     session = setup_session()
     for term in terms:
         resp = get_classes(session, term)
-        class_list += parse_classes(resp)
-        resp = get_classes(session, term)
+        class_list += parse_classes(resp.text)
 
     close_session(session)
     return generate_calendar(class_list).to_ical()
