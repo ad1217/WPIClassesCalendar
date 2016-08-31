@@ -9,15 +9,16 @@ from bs4 import BeautifulSoup
 from flask import Flask
 
 app = Flask(__name__)
+base_url = "https://bannerweb.wpi.edu/pls/prod/"
 
-urls = {'home'         : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_WWWLogin",
-        'login'        : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_ValLogin",
-        'logout'       : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_Logout",
-        'main_menu'    : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_GenMenu?name=bmenu.P_MainMnu",
-        'registration' : "https://bannerweb.wpi.edu/pls/prod/twbkwbis.P_GenMenu?name=bmenu.P_RegMnu",
-        'select_term'  : "https://bannerweb.wpi.edu/pls/prod/bwcklibs.P_StoreTerm",
-        'view_classes' : "https://bannerweb.wpi.edu/pls/prod/bwskfshd.P_CrseSchdDetl",
-        'view_term'    : "https://bannerweb.wpi.edu/pls/prod/bwskflib.P_SelDefTerm"}
+urls = {'home'         : base_url + "twbkwbis.P_WWWLogin",
+        'login'        : base_url + "twbkwbis.P_ValLogin",
+        'logout'       : base_url + "twbkwbis.P_Logout",
+        'main_menu'    : base_url + "twbkwbis.P_GenMenu?name=bmenu.P_MainMnu",
+        'registration' : base_url + "twbkwbis.P_GenMenu?name=bmenu.P_RegMnu",
+        'select_term'  : base_url + "bwcklibs.P_StoreTerm",
+        'view_classes' : base_url + "bwskfshd.P_CrseSchdDetl",
+        'view_term'    : base_url + "bwskflib.P_SelDefTerm"}
 
 
 def setup_session():
