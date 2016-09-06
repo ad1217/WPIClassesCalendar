@@ -108,6 +108,8 @@ def generate_calendar(classes):
 
     for index, c in enumerate(classes):
         event = icalendar.Event()
+        if c['times'] == ['TBA']:
+            continue
         # push the start and end dates back one day, then exclude the start date
         # this fixes a problem where the first day of the term would have all of the classes
         start_date = format_dates(c['dates'][0], c['times'][0]) - timedelta(days=1) # start of the first class
