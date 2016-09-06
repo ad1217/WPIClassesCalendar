@@ -61,7 +61,7 @@ def parse_classes(text):
         caption = class_table.caption.text.split(' - ')
         for row in tables[index + 1].find_all('tr'):
             time_col = row.find_all('td', attrs={'class':"dddefault"})
-            if time_col == []:
+            if time_col == []: # no actual meetings
                 continue
 
             class_data = {'title'             : caption[0],
@@ -78,7 +78,8 @@ def parse_classes(text):
                           'dates'             : time_col[4].text.split(" - "),
                           'type'              : time_col[5].text,
                           'instructor'        : time_col[6].text.replace(" (P)", ""),
-                          'instructor_email'  : time_col[6].a.get("href") if time_col[6].a is not None else None}
+                          'instructor_email'  : time_col[6].a.get("href") \
+                                                if time_col[6].a is not None else None}
             classes.append(class_data)
     return classes
 
@@ -118,9 +119,15 @@ def generate_calendar(classes):
         event.add('summary', c['course'] + " " + c['type'])
         event.add('dtstart', start_date)
         event.add('location', c['location'])
-        event.add('description', "{0} {1}\n{2} {3}".format(c['title'], c['section'], c['instructor'], c['instructor_email']))
+        description = "{} {}\n{} {}".format(c['title'],
+                                              c['section'],
+                                              c['instructor'],
+                                              c['instructor_email'])
+        event.add('description', description)
         event.add('dtend', end_date)
-        event.add('rrule', {'freq': "weekly", 'until': final_end_date, 'byday': format_days(c['days'])})
+        event.add('rrule', {'freq': "weekly",
+                            'until': final_end_date,
+                            'byday': format_days(c['days'])})
         event.add('exdate', start_date)
         event.add('uid', "WPICal" + str(index) + "@adamgoldsmith.name")
         event.add('dtstamp', datetime.now())
