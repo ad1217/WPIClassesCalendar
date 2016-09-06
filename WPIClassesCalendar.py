@@ -123,6 +123,8 @@ def generate_calendar(classes):
                                               c['section'],
                                               c['instructor'],
                                               c['instructor_email'])
+        if c['Status'].split(' ')[0] == 'Waitlist':
+            description += "\nWaitlist:" + c['waitlist_position']
         event.add('description', description)
         event.add('dtend', end_date)
         event.add('rrule', {'freq': "weekly",
