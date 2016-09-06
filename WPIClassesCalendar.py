@@ -131,7 +131,12 @@ def generate_calendar(classes):
                             'until': final_end_date,
                             'byday': format_days(c['days'])})
         event.add('exdate', start_date)
-        event.add('uid', "WPICal" + str(index) + "@adamgoldsmith.name")
+        event.add('uid',
+                  "WPICal_{}{}{}{}{}@adamgoldsmith.name".format(c['term'],
+                                                                c['course'],
+                                                                c['section'],
+                                                                c['type'],
+                                                                c['days']).replace(' ', ''))
         event.add('dtstamp', datetime.now())
 
         if c['instructor_email'] is not None:
