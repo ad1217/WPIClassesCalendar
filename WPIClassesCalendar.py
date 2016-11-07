@@ -98,12 +98,38 @@ def format_dates(date, time=None):
         date = datetime.strptime(date + time, date_fmt + time_fmt)
     else:
         date = datetime.strptime(date, date_fmt)
-    return pytz.timezone('US/Eastern').localize(date).astimezone(pytz.utc)
+    return pytz.timezone('US/Eastern').localize(date)
+
+def create_eastern_vtimezone():
+    tz = icalendar.Timezone()
+    tz.add('tzid', "US-Eastern")
+
+    tzs = icalendar.TimezoneStandard()
+    tzs.add('dtstart', datetime(1970, 10, 25, 3, 0, 0))
+    tzs.add('RRULE', {'freq': 'yearly', 'bymonth': 10, 'byday': '-1su'})
+    tzs.add('TZOFFSETFROM', timedelta(hours=-4))
+    tzs.add('TZOFFSETTO', timedelta(hours=-5))
+    tzs.add('TZNAME', "EST")
+
+    tzd = icalendar.TimezoneDaylight()
+    tzd.add('dtstart', datetime(1970, 10, 25, 2, 0, 0))
+    tzd.add('RRULE', {'freq': 'yearly', 'bymonth': 4, 'byday': '1su'})
+    tzd.add('TZOFFSETFROM', timedelta(hours=-5))
+    tzd.add('TZOFFSETTO', timedelta(hours=-4))
+    tzd.add('TZNAME', "EDT")
+
+    tz.add_component(tzs)
+    tz.add_component(tzd)
+
+    return tz
 
 def generate_calendar(classes):
     cal = icalendar.Calendar()
     cal.add('prodid', '-//WPI Calender Generator//adamgoldsmith.name//')
     cal.add('version', '2.0')
+
+    tz = create_eastern_vtimezone()
+    cal.add_component(tz)
 
     for index, c in enumerate(classes):
         event = icalendar.Event()
