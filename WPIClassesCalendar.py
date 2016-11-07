@@ -6,9 +6,7 @@ import icalendar
 from preferences import *
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask
 
-app = Flask(__name__)
 base_url = "https://bannerweb.wpi.edu/pls/prod/"
 
 urls = {'home'         : base_url + "twbkwbis.P_WWWLogin",
@@ -152,7 +150,6 @@ def generate_calendar(classes):
         cal.add_component(event)
     return cal
 
-@app.route("/")
 def main():
     class_list = []
     year = str((datetime.now() + timedelta(weeks=26)).year)
@@ -166,4 +163,4 @@ def main():
     return generate_calendar(class_list).to_ical()
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+    print(main())
