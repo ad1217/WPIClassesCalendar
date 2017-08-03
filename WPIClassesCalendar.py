@@ -49,7 +49,9 @@ def parse_classes(text):
     soup = BeautifulSoup(text, 'html.parser')
     tables = soup.find_all(attrs={'class':"datadisplaytable"})
     for index, class_table in enumerate(tables):
-        if class_table.caption.text == "Scheduled Meeting Times":
+        if class_table.caption.text == "Scheduled Meeting Times" \
+           or len(tables) <= index + 1 \
+           or tables[index + 1].caption.text != "Scheduled Meeting Times":
             continue
 
         # parse data into dict
